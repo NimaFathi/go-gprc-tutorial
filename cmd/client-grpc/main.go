@@ -2,10 +2,14 @@ package main
 
 import (
 	"context"
+	//"context"
 	"flag"
+	"fmt"
 	"log"
 	"time"
+	_ "time"
 
+	"github.com/NimaFathi/go-grpc-tutorial/pkg/appdetail"
 	"google.golang.org/grpc"
 )
 
@@ -22,11 +26,15 @@ func main() {
 	}
 	defer conn.Close()
 
-	c := v1.NewAppDetailClient(conn)
-
+	c := appdetail.NewAppDetailClient(conn)
+	fmt.Print(conn)
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
+	req1 := appdetail.GetAppDetailRequest{PackageName: "hello"}
+	res1, err := c.GetAppDetail(ctx, &req1)
+	if err != nil {
+		log.Fatalf("Create failed: %v", err)
+	}
+	log.Printf("Create result: <%+v>\n\n", res1)
 
-	t := time.Now().In(time.UTC)
-	pfx := t.Format(time.RFC3339Nano)
 }
